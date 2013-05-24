@@ -2,46 +2,51 @@ package main;
 
 public class ShortDistanceFinder {
 
+	private static ShortDistanceFinder sdf = new ShortDistanceFinder();
+
 	private int maxValue, minValue;
 	private int dist, minDist;
 
-	public void Find(int[] A, int[] B, int[] C) {
-		
-		int idxA, idxB, idxC;		
-		
-		idxA=idxB=idxC=0;
-		minDist = getMaxValue(A[A.length-1], B[B.length-1], C[C.length-1]);
-		
-		
-		while ((idxA != A.length) && (idxB != B.length) && (idxC != C.length)) {
-			minValue = getMinValue(A[idxA], B[idxB], C[idxC]);
-			maxValue = getMaxValue(A[idxA], B[idxB], C[idxC]);			
-			dist = maxValue - minValue;
-			
-			if (minDist > dist)
-				setSolutionWord(maxValue, minValue);
-			
-			if (minValue == A[idxA]) {
-				idxA++;				
-			} else if(minValue == B[idxB]) {
-				idxB++;
-			} else {
-				idxC++;
-			}
-		}
-		
-		System.out.println(minValue + ", " + maxValue + "에 있고 거리는" + minDist + "이다.");
+	private ShortDistanceFinder() {
 	}
-	
-	private int getMinValue(int a, int b, int c) {
 
+	public static ShortDistanceFinder getInstance() {
+		return sdf;
+	}
+
+	public synchronized int[] Find(int[] A, int[] B, int[] C) {
+
+		InputWordSet wp = new InputWordSet(A, B, C);
+		this.initialize();
+
+		while (isRemainingWord(wp)) {
+			calculateShortestDistance(wp);
+			moveLeastWordIndex(wp);
+		}
+
+		return new int[] { minValue, maxValue, minDist };
+	}
+
+	private void moveLeastWordIndex(InputWordSet wp) {
+		if (minValue == wp.getA()[wp.getIdxA()]) {
+			wp.addIdxA();
+		} else if (minValue == wp.getB()[wp.getIdxB()]) {
+			wp.addIdxB();
+		} else {
+			wp.addIdxC();
+		}
+	}
+
+	private int getMinValue(InputWordSet wp) {
+		int a = wp.getCurrentAValue();
+		int b = wp.getCurrentBValue();
+		int c = wp.getCurrentCValue();
 		if (a < b) {
-			if (a < c) 
+			if (a < c)
 				return a;
-			else 
+			else
 				return c;
-		} 
-		else {
+		} else {
 			if (b < c)
 				return b;
 			else
@@ -49,39 +54,128 @@ public class ShortDistanceFinder {
 		}
 	}
 
-	private int getMaxValue(int a, int b, int c) {
-		
+	private int getMaxValue(InputWordSet wp) {
+		int a = wp.getCurrentAValue();
+		int b = wp.getCurrentBValue();
+		int c = wp.getCurrentCValue();
+
 		if (a > b) {
 			if (a > c)
 				return a;
-			else 
+			else
 				return c;
-		}
-		else {
+		} else {
 			if (b > c)
 				return b;
-			else 
+			else
 				return c;
 		}
 	}
-	
-	private void setSolutionWord(int maxValue, int minValue) {
-		this.maxValue = maxValue;
-		this.minValue = minValue;		
-		minDist = dist;
+
+	private void initialize() {
+		maxValue = minValue = 0;
+		dist = 0;
+		minDist = Integer.MAX_VALUE;
 	}
-	
+
+	private void calculateShortestDistance(InputWordSet wp) {
+		minValue = getMinValue(wp);
+		maxValue = getMaxValue(wp);
+
+		dist = maxValue - minValue;
+		if (minDist > dist)
+			minDist = dist;
+	}
+
+	private boolean isRemainingWord(InputWordSet wp) {
+		return (wp.getIdxA() != wp.getA().length)
+				&& (wp.getIdxB() != wp.getB().length)
+				&& (wp.getIdxC() != wp.getC().length);
+	}
+
+	private class InputWordSet {
+		final int A[];
+		final int B[];
+		final int C[];
+		private int idxA;
+		private int idxB;
+		private int idxC;
+
+		public InputWordSet(int A[], int B[], int C[]) {
+			this.A = A;
+			this.B = B;
+			this.C = C;
+			idxA = idxB = idxC = 0;
+		}
+
+		public int[] getA() {
+			return A;
+		}
+
+		public int[] getB() {
+			return B;
+		}
+
+		public int[] getC() {
+			return C;
+		}
+
+		public int getIdxA() {
+			return idxA;
+		}
+
+		public int getCurrentAValue() {
+			return A[idxA];
+		}
+
+		public int getCurrentBValue() {
+			return B[idxB];
+		}
+
+		public int getCurrentCValue() {
+			return C[idxC];
+		}
+
+		public void addIdxA() {
+			this.idxA++;
+		}
+
+		public int getIdxB() {
+			return idxB;
+		}
+
+		public void addIdxB() {
+			this.idxB++;
+		}
+
+		public int getIdxC() {
+			return idxC;
+		}
+
+		public void addIdxC() {
+			this.idxC++;
+		}
+
+	}
+
 	public static void main(String[] args) {
 
 		ShortDistanceFinder sdf = new ShortDistanceFinder();
-		
+
 		// 각 집합은 오름차순 정렬 되어있다고 가정
-		int[] posA = {1, 2, 3, 4, 5};
-		int[] posB = {6, 7, 8};
-		int[] posC = {9, 10, 11, 12};
-		
-		sdf.Find(posA, posB, posC);
+		/*
+		 * int[] posA = {1, 18, 30, 44, 58}; int[] posB = {23, 50, 60}; int[]
+		 * posC = {35, 42, 54, 63};
+		 */
+
+		int[] posA = { 1, 18, 30, 44, 58 };
+		int[] posB = { 2, 50, 60 };
+		int[] posC = { 3, 42, 54, 63 };
+
+		int[] result = sdf.Find(posA, posB, posC);
+
+		System.out.println(result[0] + ", " + result[1] + "에 있고 거리는"
+				+ result[2] + "이다.");
 	}
 
 }
-
