@@ -6,7 +6,7 @@ public class ShortDistanceFinder {
 
 	private int maxValue, minValue;
 	private int dist, minDist;
-
+	
 	private ShortDistanceFinder() {
 	}
 
@@ -26,14 +26,37 @@ public class ShortDistanceFinder {
 
 		return new int[] { minValue, maxValue, minDist };
 	}
+	private void initialize() {
+		maxValue = minValue = 0;
+		dist = 0;
+		minDist = Integer.MAX_VALUE;
+	}
 
+
+
+	private boolean isRemainingWord(InputWordSet wp) {
+		return (wp.getIdxA() != wp.getA().length)
+				&& (wp.getIdxB() != wp.getB().length)
+				&& (wp.getIdxC() != wp.getC().length);
+	}
+
+	private void calculateShortestDistance(InputWordSet wp) {
+		minValue = getMinValue(wp);
+		maxValue = getMaxValue(wp);
+
+		dist = maxValue - minValue;
+		if (minDist > dist) {
+			minDist = dist;
+		}
+	}
+	
 	private void moveLeastWordIndex(InputWordSet wp) {
 		if (minValue == wp.getA()[wp.getIdxA()]) {
-			wp.addIdxA();
+			wp.increaseIdxA();
 		} else if (minValue == wp.getB()[wp.getIdxB()]) {
-			wp.addIdxB();
+			wp.increaseIdxB();
 		} else {
-			wp.addIdxC();
+			wp.increaseIdxC();
 		}
 	}
 
@@ -72,26 +95,6 @@ public class ShortDistanceFinder {
 		}
 	}
 
-	private void initialize() {
-		maxValue = minValue = 0;
-		dist = 0;
-		minDist = Integer.MAX_VALUE;
-	}
-
-	private void calculateShortestDistance(InputWordSet wp) {
-		minValue = getMinValue(wp);
-		maxValue = getMaxValue(wp);
-
-		dist = maxValue - minValue;
-		if (minDist > dist)
-			minDist = dist;
-	}
-
-	private boolean isRemainingWord(InputWordSet wp) {
-		return (wp.getIdxA() != wp.getA().length)
-				&& (wp.getIdxB() != wp.getB().length)
-				&& (wp.getIdxC() != wp.getC().length);
-	}
 
 	private class InputWordSet {
 		final int A[];
@@ -136,7 +139,7 @@ public class ShortDistanceFinder {
 			return C[idxC];
 		}
 
-		public void addIdxA() {
+		public void increaseIdxA() {
 			this.idxA++;
 		}
 
@@ -144,7 +147,7 @@ public class ShortDistanceFinder {
 			return idxB;
 		}
 
-		public void addIdxB() {
+		public void increaseIdxB() {
 			this.idxB++;
 		}
 
@@ -152,7 +155,7 @@ public class ShortDistanceFinder {
 			return idxC;
 		}
 
-		public void addIdxC() {
+		public void increaseIdxC() {
 			this.idxC++;
 		}
 
