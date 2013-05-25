@@ -6,7 +6,8 @@ public class ShortDistanceFinder {
 
 	private int maxValue, minValue;
 	private int dist, minDist;
-	
+	private int solMaxValue, solMinValue;
+
 	private ShortDistanceFinder() {
 	}
 
@@ -24,15 +25,14 @@ public class ShortDistanceFinder {
 			moveLeastWordIndex(wp);
 		}
 
-		return new int[] { minValue, maxValue, minDist };
+		return new int[] { solMinValue, solMaxValue, minDist };
 	}
+
 	private void initialize() {
 		maxValue = minValue = 0;
 		dist = 0;
 		minDist = Integer.MAX_VALUE;
 	}
-
-
 
 	private boolean isRemainingWord(InputWordSet wp) {
 		return (wp.getIdxA() != wp.getA().length)
@@ -46,14 +46,16 @@ public class ShortDistanceFinder {
 
 		dist = maxValue - minValue;
 		if (minDist > dist) {
+			solMinValue = minValue;
+			solMaxValue = maxValue;
 			minDist = dist;
 		}
 	}
-	
+
 	private void moveLeastWordIndex(InputWordSet wp) {
-		if (minValue == wp.getA()[wp.getIdxA()]) {
+		if (minValue == wp.getCurrentAValue()) {
 			wp.increaseIdxA();
-		} else if (minValue == wp.getB()[wp.getIdxB()]) {
+		} else if (minValue == wp.getCurrentBValue()) {
 			wp.increaseIdxB();
 		} else {
 			wp.increaseIdxC();
@@ -64,6 +66,7 @@ public class ShortDistanceFinder {
 		int a = wp.getCurrentAValue();
 		int b = wp.getCurrentBValue();
 		int c = wp.getCurrentCValue();
+		
 		if (a < b) {
 			if (a < c)
 				return a;
@@ -94,7 +97,6 @@ public class ShortDistanceFinder {
 				return c;
 		}
 	}
-
 
 	private class InputWordSet {
 		final int A[];
