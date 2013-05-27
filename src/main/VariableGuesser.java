@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class VariableGuesser {
@@ -18,19 +19,30 @@ public class VariableGuesser {
 		
 		List<Character> varList;
 		List<List<Integer>> caseSetList;
+		TermSet aSet;
+		int count = 0;
 		
 		varList = buildVariableList(termSet);
 		caseSetList = buildPossiableCaseList(varList.size());
 		
 		for (int i = 0; i < caseSetList.size(); i++) {
-			replaceVariableToNumber(termSet, varList, caseSetList.get(i));
+			aSet = replaceVariableToNumber(termSet, varList, caseSetList.get(i));
 			
+			if (isMatchExpression(aSet.getP(), aSet.getQ(), aSet.getR())) {
+				count++;
+			}
 		}
-		return 0;
+		return count;
 	}
 	
 	public int guess(String p, String q, String r) {
 
+		
+		TermSet aSet = new TermSet(p, q, r);
+		int count = this.guess(aSet);
+		
+		return count;
+		/*
 		List<Character> varList;
 		List<List<Integer>> totalCaseSetList;
 
@@ -63,24 +75,21 @@ public class VariableGuesser {
 		}
 
 		System.out.println(count + "가지");
-		return count;
+		return count;*/
 
 	}
 
 	private TermSet replaceVariableToNumber(TermSet termSet, List<Character> varList, List<Integer> CaseSetList) {
 		
-		TermSet aNumberTermSet = termSet.;
+		TermSet aNumberTermSet = termSet.clone();
 		
-		for (int n = 0; n < varList.size(); n++) {
-			
-			termSet.g
-			p_tmp = p_tmp.replace(varList.get(n), CaseSetList.get(n).toString());
-			q_tmp = q_tmp.replace(varList.get(n), CaseSetList.get(n).toString());
-			r_tmp = r_tmp.replace(varList.get(n), CaseSetList.get(n).toString());
-		}
-			
+		for (int n = 0; n < varList.size(); n++) {			
+			aNumberTermSet.replaceVariableToNumber(varList.get(n), CaseSetList.get(n));
+		}			
 		return aNumberTermSet;
 	}
+
+	
 	private boolean isMatchExpression(String p, String q, String r) {
 		
 		if (p.charAt(0) == '0' || q.charAt(0) == '0' || r.charAt(0) == '0') {
@@ -150,7 +159,6 @@ public class VariableGuesser {
 			if (set.size() == numberOfVariable)
 				totalSet.add(set);
 		}
-
 		return totalSet;
 	}
 
@@ -169,14 +177,26 @@ public class VariableGuesser {
 		String q = "YZ";
 		String r = "100";
 
-		vg.guess(p, q, r);
+		System.out.println(vg.guess(p, q, r));
 		// System.out.println(vg.getNumberOfCase(3));
 
 	}
 	
-	class TermSet {
+	
+	class TermSet implements Iterable<String> {
 
 		List<String> termList;
+		Iterator iter;
+		
+		// termList의 deep copy. 
+		public TermSet(List<String> termList) {
+			this.termList = new ArrayList<String>();
+			this.iter = termList.iterator();
+			
+			for (String aTerm : termList) {
+				this.termList.add(aTerm);				
+			}
+		}
 		
 		public TermSet(String p, String q, String r) {
 		
@@ -199,10 +219,24 @@ public class VariableGuesser {
 			return termList.get(2);
 		}
 		
-		public void replaceVariableToNumber() {
+		public TermSet replaceVariableToNumber(char variable, int value) {
+
+			List<String> newList = new ArrayList<String>();
 			
+			for (String aTerm : termList) {
+				newList.add(aTerm.replace(variable, (char)(value+48)));
+			}
+			return new TermSet(newList);			
 		}
 		
-	}
+		// deep copy. clone의 의미에 맞는지.
+		public TermSet clone() {
+			return new TermSet(this.termList); 
+		}
 
+		@Override
+		public Iterator<String> iterator() {
+			return this.iter;
+		}
+	}
 }
