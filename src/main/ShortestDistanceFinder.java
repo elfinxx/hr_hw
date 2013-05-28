@@ -23,23 +23,25 @@ public class ShortestDistanceFinder {
 
 		while (!isArrivalEverySetEnd(positionSetList)) {
 
-			positionSet = calculateMinMaxPositionOfCurrentSet(positionSetList);
-			solutionSet = UpdateSolutionSet(solutionSet, positionSet);
-			IncreaseMinPositionSetIndex(positionSet.getMinPosition(), positionSetList);
+			positionSet = calculateMinMaxPositionOf(positionSetList);
+			solutionSet = UpdateSolutionSetUsing(solutionSet, positionSet);
+			IncreaseMinPositionSetIndex(positionSet.getMinPosition(),
+					positionSetList);
 		}
 		return solutionSet;
 	}
 
 	public PositionSet Find(int[] A, int[] B, int[] C) {
-		
+
 		List<WordPositionSet> positionSetList;
 		positionSetList = buildUpSetList(A, B, C);
 
 		return this.Find(positionSetList);
 	}
 
-	private PositionSet calculateMinMaxPositionOfCurrentSet(List<WordPositionSet> setList) {
-		
+	private PositionSet calculateMinMaxPositionOf(
+			List<WordPositionSet> setList) {
+
 		int minValue, maxValue;
 
 		minValue = getMinPositionOfSet(setList);
@@ -48,7 +50,8 @@ public class ShortestDistanceFinder {
 		return new PositionSet(minValue, maxValue);
 	}
 
-	private PositionSet UpdateSolutionSet(PositionSet previousPosSet, PositionSet currentPosSet) {
+	private PositionSet UpdateSolutionSetUsing(PositionSet previousPosSet,
+			PositionSet currentPosSet) {
 
 		if (previousPosSet.getDistance() > currentPosSet.getDistance())
 			return currentPosSet;
@@ -56,8 +59,9 @@ public class ShortestDistanceFinder {
 			return previousPosSet;
 	}
 
-	private void IncreaseMinPositionSetIndex(int minPosition, List<WordPositionSet> setList) {
-		
+	private void IncreaseMinPositionSetIndex(int minPosition,
+			List<WordPositionSet> setList) {
+
 		for (WordPositionSet aSet : setList) {
 			if (minPosition == aSet.getCurruntPostion()) {
 				aSet.increaseIdx();
@@ -112,22 +116,8 @@ public class ShortestDistanceFinder {
 		return setList;
 	}
 
-	public static void main(String[] args) {
-
-		ShortestDistanceFinder sdf = new ShortestDistanceFinder();
-
-		int[] posA = { 1, 18, 30, 44, 58 };
-		int[] posB = { 23, 50, 60 };
-		int[] posC = { 35, 42, 54, 63 };
-
-		PositionSet solutionSet;
-		solutionSet = sdf.Find(posA, posB, posC);
-		System.out.println(solutionSet.toString());
-
-	}
-
 	class WordPositionSet {
-		
+
 		final int position[];
 		private int idx;
 
@@ -144,5 +134,4 @@ public class ShortestDistanceFinder {
 			idx++;
 		}
 	}
-
 }
