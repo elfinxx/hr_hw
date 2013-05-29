@@ -14,7 +14,7 @@ public class ShortestDistanceFinder {
 		return sdf;
 	}
 
-	public PositionSet Find(List<WordPositionSet> positionSetList) {
+	public PositionSet find(List<WordPositionSet> positionSetList) {
 
 		PositionSet positionSet;
 		PositionSet solutionSet;
@@ -24,19 +24,19 @@ public class ShortestDistanceFinder {
 		while (!isArrivalEverySetEnd(positionSetList)) {
 
 			positionSet = calculateMinMaxPositionOf(positionSetList);
-			solutionSet = UpdateSolutionSetUsing(solutionSet, positionSet);
-			IncreaseMinPositionSetIndex(positionSet.getMinPosition(),
+			solutionSet = updateSolutionSetUsing(solutionSet, positionSet);
+			increaseMinPositionSetIndex(positionSet.getMinPosition(),
 					positionSetList);
 		}
 		return solutionSet;
 	}
 
-	public PositionSet Find(int[] A, int[] B, int[] C) {
+	public PositionSet find(int[] A, int[] B, int[] C) {
 
 		List<WordPositionSet> positionSetList;
 		positionSetList = buildUpSetList(A, B, C);
 
-		return this.Find(positionSetList);
+		return this.find(positionSetList);
 	}
 
 	private PositionSet calculateMinMaxPositionOf(
@@ -50,7 +50,7 @@ public class ShortestDistanceFinder {
 		return new PositionSet(minValue, maxValue);
 	}
 
-	private PositionSet UpdateSolutionSetUsing(PositionSet previousPosSet,
+	private PositionSet updateSolutionSetUsing(PositionSet previousPosSet,
 			PositionSet currentPosSet) {
 
 		if (previousPosSet.getDistance() > currentPosSet.getDistance())
@@ -59,7 +59,7 @@ public class ShortestDistanceFinder {
 			return previousPosSet;
 	}
 
-	private void IncreaseMinPositionSetIndex(int minPosition,
+	private void increaseMinPositionSetIndex(int minPosition,
 			List<WordPositionSet> setList) {
 
 		for (WordPositionSet aSet : setList) {
